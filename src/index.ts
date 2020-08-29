@@ -44,16 +44,9 @@ export class Markov {
 	maxOrder: number;
 	keys: string[];
 	startKeys: string[];
-	constructor(options: {
-		delimiter: string;
-		source: string | string[];
-		minOrder: number;
-		maxOrder: number;
-	}) {
+	constructor(options: { delimiter: string; source: string | string[]; minOrder: number; maxOrder: number }) {
 		this.delimiter = options.delimiter || '';
-		this.source = Array.isArray(options.source)
-			? options.source
-			: [options.source];
+		this.source = Array.isArray(options.source) ? options.source : [options.source];
 		this.ngrams = {};
 		this.minOrder = isNaN(options.minOrder) ? 2 : options.minOrder;
 		this.maxOrder = isNaN(options.maxOrder) ? 4 : options.maxOrder;
@@ -65,8 +58,7 @@ export class Markov {
 				for (let i = 0; i < s.length - o + 1; ++i) {
 					const w = s.slice(i, i + o);
 					const hash = w.join(this.delimiter);
-					const ngram = (this.ngrams[hash] =
-						this.ngrams[hash] || new Ngram(w, o));
+					const ngram = (this.ngrams[hash] = this.ngrams[hash] || new Ngram(w, o));
 					ngram.occurrences += 1;
 					if (i === 0) {
 						ngram.start = true;
@@ -76,7 +68,7 @@ export class Markov {
 						const c = ngram.string[ngram.string.length - 1];
 						const next = (prev.next[c] = prev.next[c] || {
 							next: ngram,
-							occurrences: 0
+							occurrences: 0,
 						});
 						next.occurrences += 1;
 					}
@@ -95,7 +87,7 @@ export class Markov {
 						const next = ngram.next[i];
 						ngram.thresholds.push({
 							next: next,
-							p: next.occurrences / ngram.occurrences
+							p: next.occurrences / ngram.occurrences,
 						});
 					}
 				}
@@ -122,15 +114,11 @@ export class Markov {
 	}
 
 	randomStartNgram() {
-		return this.ngrams[
-			this.startKeys[Math.floor(Math.random() * this.startKeys.length)]
-		];
+		return this.ngrams[this.startKeys[Math.floor(Math.random() * this.startKeys.length)]];
 	}
 
-	randomSequence(start: string, until :(() => boolean) | number | string = '\0') {
-		let s = start
-			? start.split(this.delimiter)
-			: this.randomStartNgram().string;
+	randomSequence(start: string, until: (() => boolean) | number | string = '\0') {
+		let s = start ? start.split(this.delimiter) : this.randomStartNgram().string;
 		let n;
 		let o;
 		const orders = [];
@@ -140,11 +128,7 @@ export class Markov {
 		if (typeof until === 'string') {
 			wrappedUntil = Markov.until.bind(undefined, until);
 		} else if (typeof until === 'number') {
-			wrappedUntil = Markov.untilMaxLength.bind(
-				undefined,
-				this.delimiter,
-				until
-			);
+			wrappedUntil = Markov.untilMaxLength.bind(undefined, this.delimiter, until);
 		} else {
 			wrappedUntil = until;
 		}
