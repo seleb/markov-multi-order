@@ -5,6 +5,7 @@ function eq(a, b) {
 	assert(a === b, `${a} !== ${b}`);
 }
 
+// test letters
 let m = new Markov({
 	delimiter: '',
 	minOrder: 1,
@@ -15,6 +16,7 @@ eq(m.randomSequence('a', 1), 'a');
 eq(m.randomSequence('a', 2), 'ab');
 eq(m.randomSequence('c', 2), 'cd');
 
+// test words
 m = new Markov({
 	delimiter: ' ',
 	minOrder: 1,
@@ -25,6 +27,7 @@ eq(m.randomSequence('a', 1), 'a');
 eq(m.randomSequence('a', 2), 'a b');
 eq(m.randomSequence('c', 2), 'c d');
 
+// test randomness
 m = new Markov({
 	delimiter: '',
 	minOrder: 1,
