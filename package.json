@@ -1,8 +1,8 @@
 {
   "name": "markov-multi-order",
   "version": "0.0.0",
-  "description": "",
-  "keywords": [],
+  "description": "Simple markov chain implementation supporting multiple orders of ngrams",
+  "keywords": ["markov", "chain", "procedural", "generation", "text"],
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -11,7 +11,7 @@
   "author": "Sean S. LeBlanc <sean.s.leblanc@gmail.com>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git://github.com/seleb/markov-multi-order.git"
   },
   "license": "MIT",
   "scripts": {
@@ -20,5 +20,24 @@
   },
   "devDependencies": {
     "typescript": "^4.0.2"
-  }
+  },
+	"release": {
+		"plugins": [
+			"@semantic-release/commit-analyzer",
+			"@semantic-release/release-notes-generator",
+			"@semantic-release/changelog",
+			"@semantic-release/npm",
+			"@semantic-release/github",
+			[
+				"@semantic-release/git",
+				{
+					"assets": [
+						"CHANGELOG.md",
+						"package.json",
+						"package-lock.json"
+					]
+				}
+			]
+		]
+	}
 }

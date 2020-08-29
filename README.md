@@ -1,5 +1,7 @@
 # `markov-multi-order`
 
+Simple markov chain implementation supporting multiple orders of ngrams
+
 ```sh
 npm i markov-multi-order
 ```
