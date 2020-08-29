@@ -1,0 +1,135 @@
+<html>
+
+<head>
+	<style>
+		html {
+			font-family: 'Courier New', Courier, monospace;
+		}
+
+		form {
+			display: grid;
+			grid-template-columns: 6rem 1fr;
+			grid-gap: 0.5rem 1rem;
+			margin-bottom: 2rem;
+		}
+
+		label {
+			text-align: right;
+		}
+
+		form>label::after {
+			content: ':';
+		}
+
+		input[type="submit"] {
+			grid-column-start: 2;
+			cursor: pointer;
+		}
+
+		#overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background: black;
+			color: white;
+			opacity: 0.25;
+			transition: opacity 0.5s ease-in-out;
+		}
+
+		#overlay[aria-hidden="true"] {
+			opacity: 0;
+			pointer-events: none;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>markov-multi-order</h1>
+	<h2>options</h2>
+	<form>
+		<label for="delimiter">delimiter</label>
+		<div>
+			<label for="delimiter-words">words</label>
+			<input id="delimiter-words" name="delimiter" type="radio" value=" " checked />
+			<label for="delimiter-letters">letters</label>
+			<input id="delimiter-letters" name="delimiter" type="radio" value="" />
+		</div>
+
+		<label for="minOrder">minOrder</label>
+		<input id="minOrder" name="minOrder" type="number" value="2" />
+
+		<label for="maxOrder">maxOrder</label>
+		<input id="maxOrder" name="maxOrder" type="number" value="4" />
+
+		<label for="source">source</label>
+		<textarea id="source" name="source" rows="10" placeholder="Enter source text here. Each line will be treated as a separate entry."></textarea>
+
+		<input type="submit" value="save" />
+	</form>
+
+	<h2>test</h2>
+	<form>
+		<label for="prompt">prompt</label>
+		<input type="text" id="prompt" name="prompt" />
+		<input type="submit" value="generate" />
+		<label for="output">output</label>
+		<textarea placeholder="Select 'generate' above to create a new entry" id="output" rows="10"></textarea>
+	</form>
+	<div id="overlay" aria-hidden="true"></div>
+
+	<script src="./index.js"></script>
+	<script>
+		let markov;
+		const overlay = document.querySelector('#overlay');
+		const markovForm = document.querySelector('form');
+
+		function frame() {
+			return new Promise(r => requestAnimationFrame(r));
+		}
+
+		function saveOptions() {
+			const data = new FormData(markovForm);
+			markov = new Markov({
+				delimiter: data.get('delimiter'),
+				minOrder: data.get('minOrder'),
+				maxOrder: data.get('maxOrder'),
+				source: data.get('source').split('\n').map(i => i.trim()).filter(i => i),
+			});
+		}
+		markovForm.onsubmit = async (event) => {
+			event.preventDefault();
+			overlay.setAttribute('aria-hidden', false);
+			await frame();
+			await frame();
+			saveOptions();
+			await frame();
+			await frame();
+			overlay.setAttribute('aria-hidden', true);
+		}
+		const generateForm = document.querySelectorAll('form')[1];
+		const output = document.querySelector('#output');
+		generateForm.onsubmit = async (event) => {
+			event.preventDefault();
+			overlay.setAttribute('aria-hidden', false);
+			await frame();
+			await frame();
+			try {
+				output.innerText = markov.randomSequence(new FormData(generateForm).get('prompt'));
+			} catch (error) {
+				console.error(error);
+			}
+			await frame();
+			await frame();
+			overlay.setAttribute('aria-hidden', true);
+		};
+
+		saveOptions();
+	</script>
+</body>
+
+</html>

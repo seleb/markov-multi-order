@@ -21,7 +21,9 @@
  },
  "license": "MIT",
  "scripts": {
-  "build": "tsc",
+  "build": "npm run build:src && npm run build:docs",
+  "build:src": "tsc",
+  "build:docs": "cp ./dist/index.js ./docs/index.js && sed -i 's/(function (factory) {/(function (factory) {return factory(undefined, window);/g' ./docs/index.js",
   "test": "node ./src/index.test.js"
  },
  "devDependencies": {
@@ -38,6 +40,7 @@
     "@semantic-release/git",
     {
      "assets": [
+      "docs/*",
       "CHANGELOG.md",
       "package.json",
       "package-lock.json"
