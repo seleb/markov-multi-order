@@ -1,6 +1,6 @@
 {
  "name": "markov-multi-order",
- "version": "1.0.0",
+ "version": "1.0.1",
  "description": "Simple markov chain implementation supporting multiple orders of ngrams",
  "keywords": [
   "markov",
