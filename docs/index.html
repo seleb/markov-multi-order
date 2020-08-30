@@ -65,10 +65,19 @@
 		<input id="minOrder" name="minOrder" type="number" value="2" />
 
 		<label for="maxOrder">maxOrder</label>
-		<input id="maxOrder" name="maxOrder" type="number" value="4" />
+		<input id="maxOrder" name="maxOrder" type="number" value="6" />
 
 		<label for="source">source</label>
-		<textarea id="source" name="source" rows="10" placeholder="Enter source text here. Each line will be treated as a separate entry."></textarea>
+		<textarea id="source" name="source" rows="10"
+			placeholder="Enter source text here. Each line will be treated as a separate entry."></textarea>
+		<label for="source-examples">source examples</label>
+		<select id="source-examples">
+			<option selected>Custom</option>
+			<option>Frankenstein</option>
+			<option>Dracula</option>
+			<option>Judith Hunts</option>
+			<option>Cat Facts</option>
+		</select>
 
 		<input type="submit" value="save" />
 	</form>
@@ -130,6 +139,53 @@
 		};
 
 		saveOptions();
+
+		function gutenburgUrl(id) {
+			return `https://cors-anywhere.herokuapp.com/https://www.gutenberg.org/files/${id}/${id}-8.txt`
+		}
+
+		function gutenburgPreprocess(s) {
+			return s.replace(/(?!^)\s\n/gm, ' ');
+		}
+
+		const books = {
+			Frankenstein: [gutenburgUrl(42324), gutenburgPreprocess],
+			Dracula: [gutenburgUrl(345), gutenburgPreprocess],
+			'Judith Hunts': [
+				'https://cors-anywhere.herokuapp.com/https://cdn.discordapp.com/attachments/675431273505882149/745031583244877964/2019-08-27_to_2020-08-17.txt',
+				s => s.split('\n').filter((i, idx) => idx % 3 === 1).join('\n'),
+			],
+			'Cat Facts': [
+				'https://cat-fact.herokuapp.com/facts',
+				s => JSON.parse(s).all.map(i => i.text).join('\n'),
+			]
+		};
+		document.querySelector('#source').onchange = () => {
+			document.querySelector('#source-examples [selected]').selected = false;
+			document.querySelector('#source-examples :first-child').selected = true;
+		}
+		document.querySelector('#source-examples').onchange = async (event) => {
+			if (event.target.value === 'Custom') {
+				document.querySelector('#source').value = '';
+				return;
+			}
+			overlay.setAttribute('aria-hidden', false);
+			await frame();
+			await frame();
+			try {
+				const book = books[event.target.value];
+				const response = await fetch(`${book[0]}`);
+				const text = await response.text();
+				document.querySelector('#source').value = book[1](text);
+				saveOptions();
+			} catch (error) {
+				console.error(error);
+				alert(`Failed to fetch "${event.target.value}"`);
+			}
+			await frame();
+			await frame();
+			overlay.setAttribute('aria-hidden', true);
+		};
 	</script>
 </body>
 
